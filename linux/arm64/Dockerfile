@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.9.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.9.0-devel-ubuntu22.04@sha256:02b7c7eda5c4c8f431a1fbcb88720bf563817fb753513979e6d373c07ac32d6e
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates \
@@ -14,16 +14,8 @@ echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://ap
 apt-get update && \
 apt-get install -y cmake
 
-
-RUN wget https://developer.download.nvidia.com/compute/cuda/12.9.0/local_installers/cuda-repo-cross-sbsa-ubuntu2204-12-9-local_12.9.0-1_all.deb && \
-    dpkg -i cuda-repo-cross-sbsa-ubuntu2204-12-9-local_12.9.0-1_all.deb && \
-    cp /var/cuda-repo-cross-sbsa-ubuntu2204-12-9-local/cuda-*-keyring.gpg /usr/share/keyrings/
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    cuda-cross-sbsa-12-9 \
-    gcc-aarch64-linux-gnu \
-    g++-aarch64-linux-gnu
-
-ENV CUDAHOSTCXX=aarch64-linux-gnu-g++ \
-    CXX=aarch64-linux-gnu-g++ \
-    CC=aarch64-linux-gnu-gcc \
+ENV CUDAHOSTCXX=g++ \
+    CXX=g++ \
+    CC=gcc \
     TARGET_ARCH=arm64
+

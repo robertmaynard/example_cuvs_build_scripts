@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.9.0-devel-ubuntu22.04
+FROM nvidia/cuda:12.9.0-devel-ubuntu22.04@sha256:0a254a86e28379f7a761c73caf4874247d5e3fbcf57bd99a44856ccf9098e092
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
       ca-certificates \

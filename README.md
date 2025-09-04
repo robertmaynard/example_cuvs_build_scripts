@@ -12,13 +12,21 @@ The ``<os>/<arch>/`` directories contain Docker specifications that allow anyone
 * ``linux/amd64/``: Linux on ``x86_64`` architectures.
 
 
+Make sure to have qemu installed and registered with docker:
+```
+docker run --privileged --rm tonistiigi/binfmt --install all
+```
+
+
 .. code-block:: console
 
     $ git clone https://github.com/rapidsai/cuvs.git
     $ git clone https://github.com/rapidsai/raft.git
-    $ docker build --tag=libcuvs_base_amd64 \
+    $ docker build \
+        --platform linux/amd64 \
+        --tag=libcuvs_base_amd64  \
         -f linux/amd64/Dockerfile .
-    $ bash ./build_libcuvs.sh libcuvs_base_amd64
+    $ bash ./build_libcuvs.sh amd64
     $ ls -l libcuvs
 
 
@@ -26,7 +34,9 @@ The ``<os>/<arch>/`` directories contain Docker specifications that allow anyone
 
     $ git clone https://github.com/rapidsai/cuvs.git
     $ git clone https://github.com/rapidsai/raft.git
-    $ docker build --tag=libcuvs_base_arm64 \
+    $ docker build \
+        --platform linux/arm64 \
+        --tag=libcuvs_base_arm64 \
         -f linux/arm64/Dockerfile .
-    $ bash ./build_libcuvs.sh libcuvs_base_arm64
+    $ bash ./build_libcuvs.sh amd64
     $ ls -l libcuvs

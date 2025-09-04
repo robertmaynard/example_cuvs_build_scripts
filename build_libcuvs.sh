@@ -8,5 +8,7 @@ docker run -it --rm --ipc=host \
   -v $(pwd)/raft/:/code/raft \
   -v $(pwd)/scripts/:/code/scripts \
   -v $(pwd)/:/code/.out \
-  -w /code/ $1
+  -w /code/ \
+  --platform linux/$1 \
+  libcuvs_base_$1
 
