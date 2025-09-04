@@ -14,4 +14,7 @@ echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://ap
 apt-get update && \
 apt-get install -y cmake
 
-
+ENV CUDAHOSTCXX=g++ \
+    CXX=g++  \
+    CC=gcc \
+    TARGET_ARCH=amd64

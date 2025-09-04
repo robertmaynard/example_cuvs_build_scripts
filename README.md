@@ -16,7 +16,17 @@ The ``<os>/<arch>/`` directories contain Docker specifications that allow anyone
 
     $ git clone https://github.com/rapidsai/cuvs.git
     $ git clone https://github.com/rapidsai/raft.git
-    $ docker build --tag=libcuvs_base \
+    $ docker build --tag=libcuvs_base_amd64 \
         -f linux/amd64/Dockerfile .
-    $ bash ./build_libcuvs.sh
+    $ bash ./build_libcuvs.sh libcuvs_base_amd64
+    $ ls -l libcuvs
+
+
+.. code-block:: console
+
+    $ git clone https://github.com/rapidsai/cuvs.git
+    $ git clone https://github.com/rapidsai/raft.git
+    $ docker build --tag=libcuvs_base_arm64 \
+        -f linux/arm64/Dockerfile .
+    $ bash ./build_libcuvs.sh libcuvs_base_arm64
     $ ls -l libcuvs
