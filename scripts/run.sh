@@ -21,4 +21,4 @@ cmake --install /code/cuvs/cpp/build --prefix /tmp/rapids/
 
 # remove cutlass test infra that is installed unconditionally
 rm -rf /tmp/rapids/test/
-tar czf /code/.out/libcuvs.tar.gz /tmp/rapids/
+tar czf /code/.out/libcuvs.tar.gz -C /tmp/rapids/ .
