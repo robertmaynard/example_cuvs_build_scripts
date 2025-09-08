@@ -1,20 +1,28 @@
-FROM nvidia/cuda:12.9.0-devel-ubuntu22.04@sha256:0a254a86e28379f7a761c73caf4874247d5e3fbcf57bd99a44856ccf9098e092
+FROM nvidia/cuda:12.9.1-devel-rockylinux8.04@sha256:8d75fca3fc684919d806956e1fd2e197ee71a578af8106a61b4db24248fbe9be
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-      ca-certificates \
-      gpg \
-      wget \
+ARG TOOLSET_VERSION=14
+ARG CMAKE_VERSION=3.31.8
+ARG CMAKE_ARCH=x86_64
+
+RUN dnf install -y \
+      gcc-toolset-${TOOLSET_VERSION} \
       git \
-      python3 \
-      ninja-build
+      make \
+      patch \
+      python39 \
+      tar \
+      wget
 
-RUN test -f /usr/share/doc/kitware-archive-keyring/copyright || \
-wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | tee /usr/share/keyrings/kitware-archive-keyring.gpg >/dev/null && \
-echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | tee /etc/apt/sources.list.d/kitware.list >/dev/null && \
-apt-get update && \
-apt-get install -y cmake
+RUN echo "source scl_source enable gcc-toolset-${TOOLSET_VERSION}" >> /etc/bashrc;
+ENV BASH_ENV=/etc/bashrc
+
+# Fetch and install CMake.
+RUN cd /usr/local && wget --quiet https://github.com/Kitware/CMake/releases/download/v${CMAKE_VERSION}/cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}.tar.gz && \
+   tar zxf cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}.tar.gz && \
+   rm cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}.tar.gz && \
+   ln -s /usr/local/cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}/bin/cmake /usr/local/bin/cmake
 
 ENV CUDAHOSTCXX=g++ \
-    CXX=g++  \
+    CXX=g++ \
     CC=gcc \
     TARGET_ARCH=amd64
