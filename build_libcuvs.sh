@@ -5,7 +5,6 @@ set -x
 
 docker run -it --rm --ipc=host \
   -v $(pwd)/cuvs/:/code/cuvs \
-  -v $(pwd)/raft/:/code/raft \
   -v $(pwd)/scripts/:/code/scripts \
   -v $(pwd)/:/code/.out \
   -w /code/ \

@@ -21,7 +21,6 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 .. code-block:: console
 
     $ git clone https://github.com/rapidsai/cuvs.git
-    $ git clone https://github.com/rapidsai/raft.git
     $ docker build \
         --platform linux/amd64 \
         --tag=libcuvs_base_amd64  \
@@ -33,7 +32,6 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 .. code-block:: console
 
     $ git clone https://github.com/rapidsai/cuvs.git
-    $ git clone https://github.com/rapidsai/raft.git
     $ docker build \
         --platform linux/arm64 \
         --tag=libcuvs_base_arm64 \
