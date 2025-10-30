@@ -1,8 +1,8 @@
-FROM nvidia/cuda:12.9.1-devel-rockylinux8.04@sha256:8d75fca3fc684919d806956e1fd2e197ee71a578af8106a61b4db24248fbe9be
+FROM nvidia/cuda:12.9.1-devel-rockylinux8.04@sha256:16427be1897c6947f17a7772043ea91552220aa54cae0337cf9788b9eef31389
 
 ARG TOOLSET_VERSION=14
 ARG CMAKE_VERSION=3.31.8
-ARG CMAKE_ARCH=x86_64
+ARG CMAKE_ARCH=aarch64
 
 RUN dnf install -y \
       gcc-toolset-${TOOLSET_VERSION} \
@@ -22,7 +22,9 @@ RUN cd /usr/local && wget --quiet https://github.com/Kitware/CMake/releases/down
    rm cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}.tar.gz && \
    ln -s /usr/local/cmake-${CMAKE_VERSION}-linux-${CMAKE_ARCH}/bin/cmake /usr/local/bin/cmake
 
+
 ENV CUDAHOSTCXX=g++ \
     CXX=g++ \
     CC=gcc \
-    TARGET_ARCH=amd64
+    CUDA_MAJOR=12\
+    TARGET_ARCH=arm64

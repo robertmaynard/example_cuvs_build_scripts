@@ -23,9 +23,9 @@ docker run --privileged --rm tonistiigi/binfmt --install all
     $ git clone https://github.com/rapidsai/cuvs.git
     $ docker build \
         --platform linux/amd64 \
-        --tag=libcuvs_base_amd64  \
-        -f linux/amd64/Dockerfile .
-    $ bash ./build_libcuvs.sh amd64
+        --tag=libcuvs_base_12_amd64  \
+        -f linux/12/amd64/Dockerfile .
+    $ bash ./build_libcuvs.sh amd64 12
     $ ls -l libcuvs
 
 
@@ -34,7 +34,7 @@ docker run --privileged --rm tonistiigi/binfmt --install all
     $ git clone https://github.com/rapidsai/cuvs.git
     $ docker build \
         --platform linux/arm64 \
-        --tag=libcuvs_base_arm64 \
-        -f linux/arm64/Dockerfile .
-    $ bash ./build_libcuvs.sh amd64
+        --tag=libcuvs_base_12_amd64 \
+        -f linux/12/arm64/Dockerfile .
+    $ bash ./build_libcuvs.sh amd64 12
     $ ls -l libcuvs

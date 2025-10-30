@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.9.1-devel-rockylinux8.04@sha256:16427be1897c6947f17a7772043ea91552220aa54cae0337cf9788b9eef31389
+FROM nvidia/cuda:12.9.1-devel-rockylinux8.04@sha256:64ef6f3737e12fa0531ff50e11a2c3c2d84242a267d56e372aed04a8a34641f5
 
 ARG TOOLSET_VERSION=14
 ARG CMAKE_VERSION=3.31.8
@@ -26,4 +26,5 @@ RUN cd /usr/local && wget --quiet https://github.com/Kitware/CMake/releases/down
 ENV CUDAHOSTCXX=g++ \
     CXX=g++ \
     CC=gcc \
+    CUDA_MAJOR=13\
     TARGET_ARCH=arm64
