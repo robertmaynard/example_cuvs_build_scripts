@@ -9,6 +9,6 @@ docker run -it --rm --ipc=host \
   -v $(pwd)/:/code/.out \
   -w /code/ \
   --platform linux/$1 \
-  libcuvs_base_$1 \
+  libcuvs_base_$2_$1 \
   /bin/bash /code/scripts/build_and_install.sh
 
