@@ -196,12 +196,15 @@ else
 fi
 
 # Copy License files from second tarball
-if [ -d "$TEMP_DIR2/LICENSE" ]; then
+if [ -e "$TEMP_DIR2/LICENSE" ]; then
     echo "Copying LICENSE files from CUDA $CUDA_VER2..."
-    cp -r "$TEMP_DIR2/LICENSE" "$TEMP_OUTPUT/"
+    cp -r "$TEMP_DIR2/LICENSE" "$TEMP_OUTPUT/LICENSE.txt"
+elif [ -e "$TEMP_DIR2/LICENSE.txt" ]; then
+    echo "Copying LICENSE files from CUDA $CUDA_VER2..."
+    cp -r "$TEMP_DIR2/LICENSE.txt" "$TEMP_OUTPUT/LICENSE.txt"
 else
     echo "Copying backup LICENSE file"
-    cp -r "/home/rmaynard/Work/cuvs/LICENSE" "$TEMP_OUTPUT/"
+    cp -r "/home/rmaynard/Work/cuvs/LICENSE" "$TEMP_OUTPUT/LICENSE.txt"
 fi
 
 
