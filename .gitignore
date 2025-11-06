@@ -1,3 +1,5 @@
 raft/
 cuvs/
 libcuvs*
+__pycache__/
+push_artifact.pl
