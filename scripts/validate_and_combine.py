@@ -275,29 +275,25 @@ def combine_tarballs(tarball1: str, tarball2: str) -> str:
     # Extract CUDA versions
     cuda_ver1 = extract_cuda_version(tarball1)
     cuda_ver2 = extract_cuda_version(tarball2)
-
-    print("Detected CUDA versions:")
-    print(f"  {tarball1} -> CUDA {cuda_ver1}")
-    print(f"  {tarball2} -> CUDA {cuda_ver2}")
-
     if not cuda_ver1:
         raise TarballCombinerError(
             f"Could not extract CUDA version from '{tarball1}'\n"
             "Expected format: libcuvs_[c_]<ver>_<arch>.tar.gz (e.g., libcuvs_12_amd64.tar.gz)"
         )
-
     if not cuda_ver2:
         raise TarballCombinerError(
             f"Could not extract CUDA version from '{tarball2}'\n"
             "Expected format: libcuvs_[c_]<ver>_<arch>.tar.gz (e.g., libcuvs_13_amd64.tar.gz)"
         )
-
     if cuda_ver1 == cuda_ver2:
         raise TarballCombinerError(
             f"Both tarballs have the same CUDA version ({cuda_ver1})\n"
             "Please provide tarballs with different CUDA versions"
         )
 
+    print("Detected CUDA versions:")
+    print(f"  {tarball1} -> CUDA {cuda_ver1}")
+    print(f"  {tarball2} -> CUDA {cuda_ver2}")
     print()
 
     # Create temporary directories
@@ -367,59 +363,47 @@ def combine_tarballs(tarball1: str, tarball2: str) -> str:
         print(f"  CUDA {cuda_ver2}: {tarball2}")
 
         # Create output directories
-        output_lib_dir = temp_output / 'cuvs' / 'lib64'
+        output_lib_dir = temp_output / package_name / 'lib64'
         output_lib_dir.mkdir(parents=True)
-        (temp_output / 'include').mkdir()
 
-        # Copy lib64 from first tarball
-        lib_dir1 = find_lib_directory(temp_dir1)
-        if not lib_dir1:
-            raise TarballCombinerError(
-                f"No lib64 or lib directory found in CUDA {cuda_ver1} tarball"
-            )
+        output_include_dir = temp_output / package_name / 'include'
+        output_include_dir.mkdir(parents=True)
 
-        cuda_lib_dir1 = output_lib_dir / cuda_ver1
-        cuda_lib_dir1.mkdir()
-        print(f"Copying CUDA {cuda_ver1} lib64...")
-        copy_tree_contents(lib_dir1, cuda_lib_dir1)
+        output_license_dir = temp_output / package_name
+        output_license_file = output_license_dir / 'LICENSE.txt'
 
-        # Copy lib64 from second tarball
-        lib_dir2 = find_lib_directory(temp_dir2)
-        if not lib_dir2:
-            raise TarballCombinerError(
-                f"No lib64 or lib directory found in CUDA {cuda_ver2} tarball"
-            )
+        cuda_versions = [cuda_ver1, cuda_ver2]
+        input_lib_dirs = [find_lib_directory(temp_dir1), find_lib_directory(temp_dir2)]
+        for lib_dir, cver in zip(input_lib_dirs, cuda_versions):
+            if not lib_dir:
+                raise TarballCombinerError(
+                    f"No lib64 or lib directory found in CUDA {cver} tarball"
+                )
 
-        cuda_lib_dir2 = output_lib_dir / cuda_ver2
-        cuda_lib_dir2.mkdir()
-        print(f"Copying CUDA {cuda_ver2} lib64...")
-        copy_tree_contents(lib_dir2, cuda_lib_dir2)
+            output_versioned_lib_dir = output_lib_dir / cver
+            output_versioned_lib_dir.mkdir()
+            print(f"Copying CUDA {cver} libs...")
+            copy_tree_contents(lib_dir, output_versioned_lib_dir)
 
         # Copy include from second tarball (headers should be identical)
-        include_dir2 = temp_dir2 / 'include'
-        if not include_dir2.exists():
+        input_includes = temp_dir2 / 'include'
+        if not input_includes.exists():
             raise TarballCombinerError(
                 f"No include directory found in CUDA {cuda_ver2} tarball"
             )
-
         print(f"Copying include directory from CUDA {cuda_ver2}...")
-        copy_tree_contents(include_dir2, temp_output / 'include')
+        copy_tree_contents(input_includes, output_include_dir)
 
-        # Copy LICENSE files from second tarball
-        license_file = temp_dir2 / 'LICENSE'
-        license_txt = temp_dir2 / 'LICENSE.txt'
-
-        if license_file.exists():
-            print(f"Copying LICENSE files from CUDA {cuda_ver2}...")
-            shutil.copy2(license_file, temp_output / 'LICENSE.txt')
-        elif license_txt.exists():
-            print(f"Copying LICENSE files from CUDA {cuda_ver2}...")
-            shutil.copy2(license_txt, temp_output / 'LICENSE.txt')
-        else:
-            backup_license = Path('/home/rmaynard/Work/cuvs/LICENSE')
-            if backup_license.exists():
-                print("Copying backup LICENSE file")
-                shutil.copy2(backup_license, temp_output / 'LICENSE.txt')
+        # Copy LICENSE file
+        license_files = [temp_dir2 / 'LICENSE',
+                         temp_dir2 / 'LICENSE.txt',
+                         '/home/rmaynard/Work/cuvs/LICENSE'
+                        ]
+        for loc in license_files:
+            if loc.exists():
+                print(f"Copying LICENSE files from {loc}...")
+                shutil.copy2(loc, output_license_file)
+                break
 
         # Create the combined tarball
         print(f"Creating combined tarball: {output_tarball}")

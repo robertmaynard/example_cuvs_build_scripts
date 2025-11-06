@@ -196,7 +196,7 @@ class TestTarballCreation(unittest.TestCase):
         # Create include directory with a mock header
         include = temp_extract / 'include'
         include.mkdir()
-        include_cuvs = include / 'cuvs'
+        include_cuvs = include / 'libcuvs_c'
         include_cuvs.mkdir()
 
         header_file = include_cuvs / 'test.h'
