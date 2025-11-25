@@ -1,6 +1,6 @@
 # Python Implementation of validate_and_combine
 
-This directory contains a Python implementations of the tarball validation and combination tool.
+This directory contains a tarball validation and combination tool.
 
 ## Files
 
@@ -10,9 +10,6 @@ This directory contains a Python implementations of the tarball validation and c
 ### Usage
 
 ```bash
-# Same usage as bash script
-python3 validate_and_combine.py <tarball1> <tarball2>
-
 # Example
 python3 validate_and_combine.py libcuvs_c_12.9.1.tar.gz libcuvs_c_13.0.1.tar.gz
 ```
