@@ -248,6 +248,62 @@ def find_lib_directory(temp_dir: Path) -> Optional[Path]:
     return None
 
 
+def fix_cmake_files(output_dir: Path, package_name: str):
+    """
+    Fix CMake files to use dynamic lib/lib64 detection.
+
+    This function:
+    1. Finds all *targets.cmake files in the output directory
+    2. Adds code to set _IMPORT_LIB variable after _IMPORT_PREFIX block
+    3. Replaces hardcoded /lib64/ paths with /${_IMPORT_LIB}/
+
+    Args:
+        output_dir: Root directory containing the package
+        package_name: Name of the package (e.g., libcuvs_c)
+    """
+    # Find all targets.cmake files
+    cmake_files = list(output_dir.rglob('*targets*.cmake'))
+
+    if not cmake_files:
+        print("No CMake targets files found to fix")
+        return
+
+    print(f"Fixing {len(cmake_files)} CMake targets file(s)...")
+
+    for cmake_file in cmake_files:
+        try:
+            content = cmake_file.read_text()
+            original_content = content
+
+            # Step 1: Add _IMPORT_LIB detection after _IMPORT_PREFIX block
+            # Find the pattern and add our code after it
+            import_prefix_pattern = r'(if\(_IMPORT_PREFIX STREQUAL "/"\)\s*set\(_IMPORT_PREFIX ""\)\s*endif\(\))'
+            import_lib_code = r'''\1
+set(_IMPORT_LIB lib)
+if(EXISTS "${_IMPORT_PREFIX}/lib/${CMAKE_LIBRARY_ARCHITECTURE}")
+  set(_IMPORT_LIB lib/${CMAKE_LIBRARY_ARCHITECTURE})
+endif()
+if(EXISTS "${_IMPORT_PREFIX}/lib64")
+  set(_IMPORT_LIB lib64)
+endif()'''
+
+            content = re.sub(import_prefix_pattern, import_lib_code, content, flags=re.MULTILINE)
+
+            # Step 2: Replace ${_IMPORT_PREFIX}/lib64/ with ${_IMPORT_PREFIX}/${_IMPORT_LIB}/
+            content = content.replace('${_IMPORT_PREFIX}/lib64/', '${_IMPORT_PREFIX}/${_IMPORT_LIB}/')
+
+            # Only write if content changed
+            if content != original_content:
+                cmake_file.write_text(content)
+                print(f"  Fixed: {cmake_file.relative_to(output_dir)}")
+            else:
+                print(f"  Skipped (no changes needed): {cmake_file.relative_to(output_dir)}")
+
+        except Exception as e:
+            print(f"  Warning: Failed to fix {cmake_file}: {e}")
+            continue
+
+
 def combine_tarballs(tarball1: str, tarball2: str) -> str:
     """
     Main function to combine two tarballs.
@@ -394,13 +450,16 @@ def combine_tarballs(tarball1: str, tarball2: str) -> str:
         print(f"Copying include directory from CUDA {cuda_ver2}...")
         copy_tree_contents(input_includes, output_include_dir)
 
+        # Fix CMake files to use dynamic lib/lib64 detection
+        fix_cmake_files(temp_output, package_name)
+
         # Copy LICENSE file
         license_files = [temp_dir2 / 'LICENSE',
                          temp_dir2 / 'LICENSE.txt',
                          '/home/rmaynard/Work/cuvs/LICENSE'
                         ]
         for loc in license_files:
-            if loc.exists():
+            if os.path.exists(loc):
                 print(f"Copying LICENSE files from {loc}...")
                 shutil.copy2(loc, output_license_file)
                 break
